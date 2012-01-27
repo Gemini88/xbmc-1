@@ -58,6 +58,7 @@ SRCS=AlarmClock.cpp \
      Win32Exception.cpp \
      XBMCTinyXML.cpp \
      XMLUtils.cpp \
+     ActorProtocol.cpp \
 
 LIB=utils.a
 
