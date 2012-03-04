@@ -1456,7 +1456,7 @@ void CDVDPlayer::HandlePlaySpeed()
 
     }
     else if (m_CurrentVideo.id >= 0
-          &&  m_CurrentVideo.inited == true
+          &&  (m_CurrentVideo.inited == true || GetPlaySpeed() < 0)
           &&  m_SpeedState.lastpts  != m_dvdPlayerVideo.GetCurrentPts()
           &&  m_SpeedState.lasttime != GetTime())
     {
@@ -2126,6 +2126,11 @@ void CDVDPlayer::HandleMessages()
         if (speed != DVD_PLAYSPEED_PAUSE && m_playSpeed != DVD_PLAYSPEED_PAUSE && speed != m_playSpeed)
           m_callback.OnPlayBackSpeedChanged(speed / DVD_PLAYSPEED_NORMAL);
 
+        if (m_playSpeed < 0 && speed >= 0)
+        {
+          m_messenger.Put(new CDVDMsgPlayerSeek(GetTime(), true, true, true));
+        }
+
         // if playspeed is different then DVD_PLAYSPEED_NORMAL or DVD_PLAYSPEED_PAUSE
         // audioplayer, stops outputing audio to audiorendere, but still tries to
         // sleep an correct amount for each packet
@@ -2142,6 +2147,7 @@ void CDVDPlayer::HandleMessages()
         //        until our buffers are somewhat filled
         if(m_pDemuxer)
           m_pDemuxer->SetSpeed(speed);
+
       }
       else if (pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_NEXT) ||
                pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_PREV) ||
